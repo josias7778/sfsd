@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário por Voz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Preenchimento por Voz</h2>
+
+  <form id="formulario">
+    <label for="turma">Turma:</label>
+    <input type="text" id="turma">
+
+    <label for="dataInicio">Data Início:</label>
+    <input type="text" id="dataInicio">
+
+    <label for="dataFim">Data Final:</label>
+    <input type="text" id="dataFim">
+
+    <label for="horaInicio">Hora Início:</label>
+    <input type="text" id="horaInicio">
+
+    <label for="horaFim">Hora Final:</label>
+    <input type="text" id="horaFim">
+
+    <label for="motivo">Motivo:</label>
+    <input type="text" id="motivo">
+  </form>
+
+  <br>
+  <button onclick="iniciarReconhecimento()">🎤 Falar</button>
+
+  <script>
+    function iniciarReconhecimento() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Seu navegador não suporta reconhecimento de voz.");
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = "pt-BR";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const resultado = event.results[0][0].transcript;
+        const partes = resultado.split(',');
+
+        if (partes.length < 6) {
+          alert("Fala incompleta. Por favor, siga a ordem: turma, data início, data fim, hora início, hora fim, motivo.");
+          return;
+        }
+
+        document.getElementById("turma").value = partes[0].trim();
+        document.getElementById("dataInicio").value = partes[1].trim();
+        document.getElementById("dataFim").value = partes[2].trim();
+        document.getElementById("horaInicio").value = partes[3].trim();
+        document.getElementById("horaFim").value = partes[4].trim();
+        document.getElementById("motivo").value = partes[5].trim();
+      };
+
+      recognition.onerror = function(event) {
+        alert("Erro no reconhecimento de voz: " + event.error);
+      };
+    }
+  </script>
+</body>
+</html>
